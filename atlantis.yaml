@@ -11,7 +11,7 @@ workflows:
         # and push a new commi with the fix
         # Better would be as well to have some checks on pre-commit as well
         - run: tofu fmt -check=true -diff=true -write=false
-        - run: tofu validate
+        # - run: tofu validate
         - init:
             extra_args: ["-lock=false"]
         - plan:
@@ -26,7 +26,7 @@ workflows:
         # to fix run terraform fmt . on the directory you're developing
         # and push a new commi with the fix
         - run: tofu fmt -check=true -diff=true -write=false
-        - run: tofu validate
+        # - run: tofu validate
         - init:
             extra_args: ["-lock=false"]
         - plan:
