@@ -1,0 +1,47 @@
+version: 3
+automerge: true
+# Defining all workflows for the projects
+workflows:
+  # only_default : workflow for directories only with the default workspace and a terraform.tfvars file
+  only_default:
+    plan:
+      steps:
+        # Validation for terraform commands if in the correct format
+        # to fix run terraform fmt . on the directory you're developing
+        # and push a new commi with the fix
+        # Better would be as well to have some checks on pre-commit as well
+        - run: tofu fmt -check=true -diff=true -write=false
+        - run: tofu validate
+        - init:
+            extra_args: ["-lock=false"]
+        - plan:
+            extra_args: ["-var-file", "default.tfvars", "-lock=false"]
+  # branch_workspace : workflow for when your project has to use workspaces, like dev / stg / prod
+  # on projects for this workflow is when you want to use the same resouces and deploy to all stage cycles of development
+  # for those please use as input like a ${WORKSPACE}.tfvars as input for like different projects or prefixes and so on
+  workspaces:
+    plan:
+      steps:
+        # Validation for terraform commands if in the correct format
+        # to fix run terraform fmt . on the directory you're developing
+        # and push a new commi with the fix
+        - run: tofu fmt -check=true -diff=true -write=false
+        - run: tofu validate
+        - init:
+            extra_args: ["-lock=false"]
+        - plan:
+            extra_args: ["-var-file", "${WORKSPACE}.tfvars", "-lock=false"]
+projects:
+  - dir: my-app-infra
+    workspace: default
+    workflow: only_default
+    apply_requirements: [approved, mergeable]
+    terraform_distribution: opentofu
+    terraform_version: v1.11.5
+    autoplan:
+      when_modified:
+        - "*.tf"
+        - "*.tfvars"
+        - "files/**"
+      enabled: true
+
