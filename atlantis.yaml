@@ -35,7 +35,7 @@ projects:
   - dir: my-app-infra
     workspace: default
     workflow: only_default
-    apply_requirements: [approved, mergeable]
+    # apply_requirements: [approved, mergeable]
     terraform_distribution: opentofu
     terraform_version: v1.11.5
     autoplan:
